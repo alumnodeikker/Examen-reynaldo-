@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Informe del examen - CRUD con Supabase en Next.js</title>
+    <style>
+      @page {
+        margin: 20mm;
+      }
+
+      body {
+        color: #1f2937;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12.5px;
+        line-height: 1.55;
+        margin: 0;
+      }
+
+      h1,
+      h2,
+      h3 {
+        color: #064e3b;
+        line-height: 1.2;
+      }
+
+      h1 {
+        border-bottom: 3px solid #10b981;
+        font-size: 28px;
+        margin: 0 0 10px;
+        padding-bottom: 10px;
+      }
+
+      h2 {
+        border-bottom: 1px solid #d1fae5;
+        font-size: 20px;
+        margin-top: 28px;
+        padding-bottom: 6px;
+      }
+
+      h3 {
+        font-size: 15px;
+        margin-top: 18px;
+      }
+
+      p {
+        margin: 8px 0;
+      }
+
+      ul,
+      ol {
+        margin: 8px 0 8px 22px;
+        padding: 0;
+      }
+
+      li {
+        margin: 4px 0;
+      }
+
+      code {
+        background: #f3f4f6;
+        border-radius: 4px;
+        color: #111827;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 11.5px;
+        padding: 1px 4px;
+      }
+
+      pre {
+        background: #111827;
+        border-radius: 8px;
+        color: #f9fafb;
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 11px;
+        line-height: 1.45;
+        overflow-wrap: break-word;
+        padding: 12px;
+        white-space: pre-wrap;
+      }
+
+      .meta {
+        background: #ecfdf5;
+        border: 1px solid #a7f3d0;
+        border-radius: 8px;
+        margin: 14px 0 24px;
+        padding: 12px 14px;
+      }
+
+      .box {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        margin: 12px 0;
+        padding: 12px 14px;
+      }
+
+      .warning {
+        background: #fffbeb;
+        border-color: #fcd34d;
+      }
+
+      .ok {
+        background: #ecfdf5;
+        border-color: #6ee7b7;
+      }
+
+      .small {
+        color: #4b5563;
+        font-size: 11px;
+      }
+
+      .page-break {
+        break-before: page;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Informe del examen: CRUD con Supabase en Next.js</h1>
+
+    <div class="meta">
+      <p><strong>Proyecto:</strong> examen-reynaldo</p>
+      <p><strong>Objetivo:</strong> terminar la parte práctica del examen creando una app Next.js que gestione cursos en Supabase.</p>
+      <p><strong>Fecha:</strong> 22 de mayo de 2026</p>
+    </div>
+
+    <h2>1. Resumen de lo que se pidió</h2>
+    <p>La tarea pedía crear una aplicación Next.js conectada a Supabase para gestionar una tabla llamada <code>cursos</code>.</p>
+    <p>La tabla debía tener estos campos:</p>
+    <ul>
+      <li><code>id</code></li>
+      <li><code>nombre</code></li>
+      <li><code>modalidad</code>, con valores <code>presencial</code> u <code>online</code></li>
+      <li><code>horas</code></li>
+      <li><code>created_at</code></li>
+      <li><code>updated_at</code>, añadido para la segunda parte</li>
+    </ul>
+
+    <h3>Tarea 1: CRUD con Supabase</h3>
+    <ul>
+      <li>Mostrar el listado completo de cursos en un Client Component.</li>
+      <li>Usar <code>useEffect</code> y <code>useState</code>.</li>
+      <li>Añadir un formulario para insertar cursos con <code>insert()</code>.</li>
+      <li>Añadir un botón <strong>Eliminar</strong> en cada curso usando <code>delete().eq('id', id)</code>.</li>
+      <li>Leer las credenciales de Supabase desde <code>.env.local</code>.</li>
+    </ul>
+
+    <h3>Tarea 2: Función y trigger en PostgreSQL</h3>
+    <ul>
+      <li>Añadir el campo <code>updated_at</code>.</li>
+      <li>Crear la función <code>set_updated_at()</code>.</li>
+      <li>Crear un trigger <code>BEFORE UPDATE</code>.</li>
+      <li>Comprobar que al actualizar un curso cambia <code>updated_at</code>.</li>
+    </ul>
+
+    <h2>2. Archivos creados o modificados</h2>
+    <div class="box">
+      <ul>
+        <li><code>app/page.jsx</code>: pantalla principal con listado, formulario e inserción/eliminación de cursos.</li>
+        <li><code>utils/supabase/client.js</code>: cliente de Supabase leyendo variables de entorno.</li>
+        <li><code>supabase/snippets/cursos_updated_at.sql</code>: SQL para ejecutar en Supabase SQL Editor.</li>
+        <li><code>supabase/migrations/20260522121000_create_cursos.sql</code>: migración formal del proyecto.</li>
+        <li><code>PASOS_EXAMEN.md</code>: guía de estudio paso a paso.</li>
+        <li><code>informe-examen-supabase-next.html</code>: versión HTML de este informe.</li>
+        <li><code>informe-examen-supabase-next.pdf</code>: PDF final exportado.</li>
+      </ul>
+    </div>
+
+    <h2>3. Paso a paso realizado en el proyecto</h2>
+
+    <h3>Paso 1: Revisar el proyecto</h3>
+    <p>Primero se revisó la estructura del proyecto y la versión instalada de Next.js. El proyecto usa:</p>
+    <ul>
+      <li><code>next 16.2.6</code></li>
+      <li><code>react 19.2.4</code></li>
+      <li><code>@supabase/supabase-js 2.106.1</code></li>
+    </ul>
+    <p>También se leyó la documentación local de Next dentro de <code>node_modules/next/dist/docs/</code>, porque el archivo <code>AGENTS.md</code> avisaba que esta versión de Next podía tener cambios importantes.</p>
+
+    <h3>Paso 2: Corregir la ruta del cliente Supabase</h3>
+    <p>La página importaba:</p>
+    <pre>import { supabase } from '@/utils/supabase/client'</pre>
+    <p>Pero el proyecto tenía una carpeta escrita como <code>utlis</code>, no <code>utils</code>. Para que la importación funcionara correctamente, se creó:</p>
+    <pre>utils/supabase/client.js</pre>
+
+    <h3>Paso 3: Crear el cliente de Supabase</h3>
+    <p>El cliente se creó con <code>createClient</code>. Este archivo lee las credenciales de <code>.env.local</code>:</p>
+    <pre>import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Faltan NEXT_PUBLIC_SUPABASE_URL o NEXT_PUBLIC_SUPABASE_ANON_KEY')
+}
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)</pre>
+    <p>Esto permite usar <code>supabase</code> desde la página principal para hacer <code>select</code>, <code>insert</code> y <code>delete</code>.</p>
+
+    <div class="box warning">
+      <p><strong>Importante:</strong> el archivo <code>.env.local</code> actual apunta a Supabase local:</p>
+      <pre>NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321</pre>
+      <p>Si se usa un proyecto en <strong>supabase.com</strong>, hay que cambiar la URL y la anon key por las credenciales del proyecto remoto.</p>
+    </div>
+
+    <h3>Paso 4: Crear la interfaz en <code>app/page.jsx</code></h3>
+    <p>La página se marcó como Client Component usando:</p>
+    <pre>'use client'</pre>
+    <p>Esto es necesario porque la página usa estado, eventos y <code>useEffect</code>.</p>
+
+    <h3>Paso 5: Crear los estados</h3>
+    <p>Se usaron estados para guardar los datos y controlar la pantalla:</p>
+    <pre>const [cursos, setCursos] = useState([])
+const [nombre, setNombre] = useState('')
+const [modalidad, setModalidad] = useState('presencial')
+const [horas, setHoras] = useState('')
+const [cargando, setCargando] = useState(true)
+const [guardando, setGuardando] = useState(false)
+const [mensaje, setMensaje] = useState('')</pre>
+    <ul>
+      <li><code>cursos</code>: lista de cursos que viene desde Supabase.</li>
+      <li><code>nombre</code>, <code>modalidad</code>, <code>horas</code>: valores del formulario.</li>
+      <li><code>cargando</code>: indica si se están cargando los datos.</li>
+      <li><code>guardando</code>: indica si se está insertando un curso.</li>
+      <li><code>mensaje</code>: muestra errores o confirmaciones.</li>
+    </ul>
+
+    <h3>Paso 6: Cargar cursos con useEffect</h3>
+    <p>Al abrir la página, se ejecuta <code>cargarCursos()</code>:</p>
+    <pre>useEffect(() => {
+  cargarCursos()
+}, [])</pre>
+    <p>El array vacío <code>[]</code> significa que se ejecuta una vez al cargar la página.</p>
+
+    <h3>Paso 7: Hacer el READ con Supabase</h3>
+    <p>La función <code>cargarCursos</code> consulta la tabla <code>cursos</code>:</p>
+    <pre>const { data, error } = await supabase
+  .from('cursos')
+  .select('id, nombre, modalidad, horas, created_at, updated_at')
+  .order('created_at', { ascending: false })</pre>
+    <p>Si hay error, se muestra un mensaje. Si todo sale bien, se guardan los cursos en el estado <code>cursos</code>.</p>
+
+    <h3>Paso 8: Insertar cursos con insert()</h3>
+    <p>Cuando se envía el formulario, se ejecuta <code>crearCurso</code>. Primero se evita que la página se recargue:</p>
+    <pre>event.preventDefault()</pre>
+    <p>Después se validan los datos y se inserta la fila:</p>
+    <pre>const { error } = await supabase.from('cursos').insert({
+  nombre: nombre.trim(),
+  modalidad,
+  horas: horasNumero,
+})</pre>
+    <p>No se envía <code>id</code> ni <code>created_at</code> porque PostgreSQL los genera automáticamente.</p>
+
+    <h3>Paso 9: Eliminar cursos con delete().eq()</h3>
+    <p>Cada fila de la tabla tiene un botón <strong>Eliminar</strong>. Al pulsarlo se llama:</p>
+    <pre>eliminarCurso(curso.id)</pre>
+    <p>La función borra solo el curso que tenga ese <code>id</code>:</p>
+    <pre>const { error } = await supabase
+  .from('cursos')
+  .delete()
+  .eq('id', id)</pre>
+    <p>La parte <code>.eq('id', id)</code> es fundamental porque indica la condición del borrado.</p>
+
+    <h3>Paso 10: Mostrar la tabla</h3>
+    <p>Se recorre el array <code>cursos</code> con <code>map</code>:</p>
+    <pre>{cursos.map((curso) => (
+  &lt;tr key={curso.id}&gt;
+    ...
+  &lt;/tr&gt;
+))}</pre>
+    <p>Por cada curso se crea una fila con sus datos: id, nombre, modalidad, horas, fecha de creación, fecha de actualización y botón de eliminar.</p>
+
+    <h2 class="page-break">4. SQL de la base de datos</h2>
+    <p>Para crear la tabla y el trigger se preparó este SQL:</p>
+    <pre>create table if not exists cursos (
+  id bigint generated by default as identity primary key,
+  nombre text not null,
+  modalidad text not null check (modalidad in ('presencial', 'online')),
+  horas integer not null check (horas &gt; 0),
+  created_at timestamptz not null default now()
+);
+
+alter table cursos
+add column if not exists updated_at timestamptz;
+
+create or replace function set_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
+drop trigger if exists cursos_set_updated_at on cursos;
+
+create trigger cursos_set_updated_at
+before update on cursos
+for each row
+execute function set_updated_at();</pre>
+
+    <h3>Explicación del SQL</h3>
+    <ol>
+      <li><code>create table if not exists cursos</code>: crea la tabla si todavía no existe.</li>
+      <li><code>id bigint generated by default as identity</code>: crea un id automático.</li>
+      <li><code>modalidad ... check</code>: obliga a que modalidad sea <code>presencial</code> u <code>online</code>.</li>
+      <li><code>created_at timestamptz default now()</code>: guarda la fecha de creación automáticamente.</li>
+      <li><code>alter table ... updated_at</code>: añade el campo de última modificación.</li>
+      <li><code>set_updated_at()</code>: función que pone <code>updated_at</code> con la fecha actual.</li>
+      <li><code>trigger before update</code>: ejecuta la función antes de cada actualización.</li>
+    </ol>
+
+    <h2>5. Cómo crear la tabla si no aparece en Supabase</h2>
+    <p>Si en Supabase no se ve ninguna tabla, significa que el SQL todavía no se ha ejecutado en esa base de datos.</p>
+    <ol>
+      <li>Abre Supabase.</li>
+      <li>Entra en tu proyecto.</li>
+      <li>Ve a <strong>SQL Editor</strong>.</li>
+      <li>Abre el archivo <code>supabase/snippets/cursos_updated_at.sql</code> en este proyecto.</li>
+      <li>Copia su contenido.</li>
+      <li>Pégalo en SQL Editor.</li>
+      <li>Ejecuta el SQL.</li>
+      <li>Ve a <strong>Table Editor</strong> y comprueba que existe la tabla <code>cursos</code>.</li>
+    </ol>
+
+    <div class="box warning">
+      <p><strong>Muy importante:</strong> si la app usa Supabase local pero tú miras Supabase remoto, no verás la tabla en el sitio donde esperas.</p>
+      <p>Hay que comprobar que <code>.env.local</code> apunta exactamente a la base que estás mirando.</p>
+    </div>
+
+    <h2>6. Cómo comprobar que updated_at funciona</h2>
+    <p>En el archivo <code>supabase/snippets/cursos_updated_at.sql</code> hay una comprobación final:</p>
+    <pre>with curso_demo as (
+  insert into cursos (nombre, modalidad, horas)
+  values ('Curso de prueba', 'online', 12)
+  returning id
+)
+update cursos
+set nombre = 'Curso de prueba actualizado'
+from curso_demo
+where cursos.id = curso_demo.id
+returning cursos.id, cursos.nombre, cursos.updated_at;</pre>
+    <p>Ese bloque hace tres cosas:</p>
+    <ol>
+      <li>Inserta un curso de prueba.</li>
+      <li>Actualiza el nombre del curso.</li>
+      <li>Devuelve <code>updated_at</code>.</li>
+    </ol>
+    <p>Si <code>updated_at</code> aparece con una fecha, el trigger funciona.</p>
+
+    <h2>7. Verificaciones realizadas</h2>
+    <div class="box ok">
+      <p>Se ejecutaron estas comprobaciones:</p>
+      <ul>
+        <li><code>npm run build</code>: compiló correctamente.</li>
+        <li><code>npm run lint</code>: no devolvió errores.</li>
+        <li>La app respondió con código HTTP <code>200</code> en <code>http://127.0.0.1:3000</code>.</li>
+      </ul>
+    </div>
+
+    <h2>8. Orden recomendado para repetirlo en clase</h2>
+    <ol>
+      <li>Crear el proyecto Next.js.</li>
+      <li>Instalar <code>@supabase/supabase-js</code>.</li>
+      <li>Crear o revisar <code>.env.local</code>.</li>
+      <li>Crear <code>utils/supabase/client.js</code>.</li>
+      <li>Crear la tabla <code>cursos</code> en Supabase con SQL Editor.</li>
+      <li>Crear la página como Client Component con <code>'use client'</code>.</li>
+      <li>Crear estados con <code>useState</code>.</li>
+      <li>Cargar cursos con <code>useEffect</code>.</li>
+      <li>Mostrar la tabla con <code>map</code>.</li>
+      <li>Crear el formulario.</li>
+      <li>Insertar con <code>insert()</code>.</li>
+      <li>Eliminar con <code>delete().eq('id', id)</code>.</li>
+      <li>Añadir <code>updated_at</code>.</li>
+      <li>Crear función <code>set_updated_at()</code>.</li>
+      <li>Crear trigger <code>BEFORE UPDATE</code>.</li>
+      <li>Probar la app.</li>
+    </ol>
+
+    <h2>9. Resumen final para estudiar</h2>
+    <div class="box">
+      <p><strong>React:</strong> usa <code>useState</code> para guardar datos y <code>useEffect</code> para cargar datos al abrir la página.</p>
+      <p><strong>Supabase:</strong> usa <code>.from('cursos')</code> para indicar la tabla.</p>
+      <p><strong>Leer:</strong> <code>select()</code>.</p>
+      <p><strong>Crear:</strong> <code>insert()</code>.</p>
+      <p><strong>Eliminar:</strong> <code>delete().eq('id', id)</code>.</p>
+      <p><strong>PostgreSQL:</strong> usa una función y un trigger para actualizar <code>updated_at</code> automáticamente.</p>
+    </div>
+
+    <p class="small">Documento generado desde el proyecto local para estudiar el examen paso a paso.</p>
+  </body>
+</html>
